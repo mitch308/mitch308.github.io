@@ -8,13 +8,13 @@ subtitle: ''
 description: ''
 keywords:
 author: 洪城城
-language: zh
+language: zh-CN
 timezone: ''
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://example.com/child' and root as '/child/'
-url: http://mitch308.github.io/blog
-root: /blog/
+url: http://mitch308.github.io
+root: /
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:
@@ -98,7 +98,7 @@ ignore:
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: yilia-plus
+theme: next
 
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
@@ -106,3 +106,30 @@ deploy:
   type: git
   repo: https://github.com/mitch308/mitch308.github.io.git #https://bitbucket.org/JohnSmith/johnsmith.bitbucket.io
   branch: deploy
+
+
+jsonContent:
+  meta: false
+  pages: false
+  posts:
+    title: true
+    date: true
+    path: true
+    text: false
+    raw: false
+    content: false
+    slug: false
+    updated: false
+    comments: false
+    link: false
+    permalink: false
+    excerpt: false
+    categories: false
+    tags: true
+
+
+search:
+  path: search.xml
+  field: post
+  content: true
+  format: html
