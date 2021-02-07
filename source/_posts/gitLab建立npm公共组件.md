@@ -15,7 +15,7 @@ tags:
 ```json
 {
   "name": "@wjs-npm/fixedHeaderTable", // 组件名称（建议使用 @库名/组件名 的写法）
-  "version": "1.0.0", // 组件版本（版本管理后续补充）
+  "version": "1.0.0", // 组件版本
   "private": true, // 防止代码被公开发布
   "description": "HelloWorld",
   "main": "index.js",
@@ -77,7 +77,15 @@ import fixedHeaderTable from '@wjs-npm/fixedHeaderTable'
 
 Vue.use(fixedHeaderTable)
 ```
+5. 版本管理
+通过建立 `tag` 进行版本管理
+{% asset_img 20210207161026.jpg 创建tag %}
+{% asset_img 20210207160945.jpg 创建tag %}
+在安装依赖时，在原链接后面加上 `#tag` 设置版本
+```
+npm install -S git+https://git.wjs-dev.com/wjs-npm/fixedHeaderTable.git#1.0.0
+```
 
-5. 存在的问题
-和其它npm包一样，依赖安装后，不会自动随着依赖版本的迭代去更新 
-如果想要更新，需要删除依赖重新安装
+6. 存在的问题
+由于npm有缓存机制，所以下载一次后如果你更新了依赖代码，再次运行 `npm install` 是无法拉取到最新代码的。 
+如果要更新依赖，需要删除重新安装。
