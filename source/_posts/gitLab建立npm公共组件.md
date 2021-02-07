@@ -14,7 +14,7 @@ tags:
 `npm init` 初始化一个 `package.json`
 ```json
 {
-  "name": "@wjs-npm/fixedHeaderTable", // 组件名称
+  "name": "@wjs-npm/fixedHeaderTable", // 组件名称（建议使用 @库名/组件名 的写法）
   "version": "1.0.0", // 组件版本（版本管理后续补充）
   "private": true, // 防止代码被公开发布
   "description": "HelloWorld",
