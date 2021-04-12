@@ -1,7 +1,7 @@
 ---
 title: gitLab建立npm公共组件
 date: 2021-02-07 14:53:07
-tags:
+tags: npm gitLab
 ---
 
 # 使用gitLab建立npm公共组件
