@@ -1,0 +1,5 @@
+# Header
+menu:
+  首页: /
+  文章: /archives
+rss: /atom.xml
