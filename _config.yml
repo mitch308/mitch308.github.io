@@ -3,23 +3,22 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: 洪城城的随笔
+title: 洪城城的博客
 subtitle: ''
 description: ''
 keywords:
-author: 洪城城1
+author: 洪城城
 language: zh-CN
 timezone: ''
 
 # URL
-## If your site is put in a subdirectory, set url as 'http://example.com/child' and root as '/child/'
-url: http://mitch308.github.io
-root: /
+## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
+url: https://blog.hongcc.top
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:
-  trailing_index: true # Set to false to remove trailing 'index.html' from permalinks
-  trailing_html: true # Set to false to remove trailing '.html' from permalinks
+  trailing_index: false # Set to false to remove trailing 'index.html' from permalinks
+  trailing_html: false # Set to false to remove trailing '.html' from permalinks
 
 # Directory
 source_dir: source
@@ -98,38 +97,12 @@ ignore:
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: next
+theme: landscape
 
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
   type: git
-  repo: https://github.com/mitch308/mitch308.github.io.git #https://bitbucket.org/JohnSmith/johnsmith.bitbucket.io
-  branch: deploy
-
-
-jsonContent:
-  meta: false
-  pages: false
-  posts:
-    title: true
-    date: true
-    path: true
-    text: false
-    raw: false
-    content: false
-    slug: false
-    updated: false
-    comments: false
-    link: false
-    permalink: false
-    excerpt: false
-    categories: false
-    tags: true
-
-
-search:
-  path: search.xml
-  field: post
-  content: true
-  format: html
+  repo: https://github.com/mitch308/mitch308.github.io.git
+  # example, https://github.com/hexojs/hexojs.github.io
+  branch: gh-pages
