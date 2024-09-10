@@ -1,7 +1,11 @@
 ---
 title: js事件机制
 date: 2023-02-16 17:15:21
+categories:
+ - 面试题
 tags:
+ - 面试题
+ - javascript
 ---
 
 # 事件循环

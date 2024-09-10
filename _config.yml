@@ -8,7 +8,7 @@ subtitle: ''
 description: ''
 keywords:
 author: 洪城城
-language: zh-Hans
+language: zh-CN
 timezone: ''
 
 # URL
@@ -69,6 +69,9 @@ index_generator:
 default_category: uncategorized
 category_map:
 tag_map:
+  JS: javascript
+  js: javascript
+  CSS: css
 
 # Metadata elements
 ## https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta

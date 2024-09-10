@@ -1,7 +1,10 @@
 ---
 title: 通过JS判断浏览器类型
 date: 2021-08-26 16:18:52
+categories:
+ - 前端
 tags:
+ - js
 ---
 
 ```js
