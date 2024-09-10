@@ -120,7 +120,7 @@ module.exports = {
 
 修改前后对应的产物内容如下：
 
-![请添加图片描述](https://img-blog.csdnimg.cn/direct/c82424f6e69b475392dff4f12d635801.jpeg)
+{% asset_img c82424f6e69b475392dff4f12d635801.jpeg 请添加图片描述 %}
 
 可以看到，修改前(对应上图左半部分)代码会被包装成一个 IIFE ；而使用 `output.library` 后，代码被包装成 UMD(Universal Module Definition) 模式：
 
@@ -171,7 +171,7 @@ export const max = _.max;
 
 此时执行编译命令 `npx webpack`，我们会发现产物文件的体积非常大：
 
-![请添加图片描述](https://img-blog.csdnimg.cn/direct/bae69e08b0e7482093b30c5fd26101ef.jpeg)
+{% asset_img bae69e08b0e7482093b30c5fd26101ef.jpeg 请添加图片描述 %}
 
 这是因为 Webpack 默认会将所有第三方依赖都打包进产物中，这种逻辑能满足 Web 应用资源合并需求，但在开发 NPM 库时则很可能导致代码冗余。以 `test-lib` 为例，若使用者在业务项目中已经安装并使用了 `lodash`，那么最终产物必然会包含两份 `lodash` 代码！
 
@@ -199,7 +199,7 @@ module.exports = {
     
 
 改造后，再次执行 `npx webpack`，编译结果如下：  
-![请添加图片描述](https://img-blog.csdnimg.cn/direct/5617d9bf8de94200b7bc215a1714497a.jpeg)
+{% asset_img 5617d9bf8de94200b7bc215a1714497a.jpeg 请添加图片描述 %}
 
 改造后，主要发生了两个变化：
 

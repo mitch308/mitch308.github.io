@@ -1,9 +1,16 @@
+/**
+ * 下载图片
+ * 使用方式： node downloadImage.js ./source/_posts/{filename}.md
+ */
 const fs = require('fs')
 const https = require('https')
 const http = require('http')
 const path = require('path')
 const { argv } = require('process')
 
+/**
+ * 下载图片到本地
+ */
 function downloadUrl (url, dir, floder) {
   const protal = url.includes('https') ? https : http
   // Download the file
@@ -24,9 +31,19 @@ const [, , ...files] = argv
 files.forEach(filePath => {
   const fileObj = path.parse(filePath)
   let content = fs.readFileSync(filePath, 'utf-8')
-  content = content.replace(/https?\:\/\/.*\.(png|jpg|jpeg|gif)/g, (url) => {
+
+  // 下载markdown语法中的图片
+  content = content.replace(/\!\[([^\[\]]*?)\]\((https?\:\/\/.*\.(png|jpg|jpeg|gif))\)/g, (source, title, url) => {
     downloadUrl(url, fileObj.dir, fileObj.name)
-    return url.match(/(?<=\/)[^/]+$/)[0]
+    const img = url.match(/(?<=\/)[^/]+$/)[0]
+    return `{% asset_img ${img} ${title} %}`
+  })
+
+  // 下载img标签中的图片
+  content = content.replace(/(?<=src['"]?)https?\:\/\/.*\.(png|jpg|jpeg|gif)(?=['"])/g, (url) => {
+    downloadUrl(url, fileObj.dir, fileObj.name)
+    const img = url.match(/(?<=\/)[^/]+$/)[0]
+    return img
   })
   fs.writeFileSync(filePath, content, 'utf-8')
 })
