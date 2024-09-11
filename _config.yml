@@ -108,4 +108,4 @@ deploy:
   type: git
   repo: https://github.com/mitch308/mitch308.github.io.git
   # example, https://github.com/hexojs/hexojs.github.io
-  branch: gh-pages
+  branch: deploy
