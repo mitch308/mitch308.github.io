@@ -115,6 +115,7 @@ WantedBy=multi-user.target
 ```
 
 ## 开始使用
+添加 `@etsme:registry` 之后，操作 `@etsme/*` 的包就不再需要添加 `--registry` 参数了
 ```bash
 # 添加npm仓库地址
 npm config set @etsme:registry=http://npm.etsme.com/
@@ -123,16 +124,23 @@ npm config set @etsme:registry=http://npm.etsme.com/
 npm adduser --registry http://npm.etsme.com
 
 # 发布包
-npm publish --registry http://npm.etsme.com
+npm publish --registry
 
 # 发布测试版本
-npm publish --registry http://npm.etsme.com --tag beta
+npm publish --registry --tag beta
 
 # 取消发布
-npm unpublish --force --registry http://npm.etsme.com
+npm unpublish --force
 
 #取消发布测试版本，会删除所有beta版本
-npm unpublish --force --registry http://npm.etsme.com --tag beta
+npm unpublish --force --tag beta
+
+# 安装包
+npm install @etsme/*
+yarn add @etsme/*
+
+# 安装测试版本
+npm install @etsme/*@beta
 
 # 查看包
 npm view @etsme/*
