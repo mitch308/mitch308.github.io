@@ -12,13 +12,13 @@ tags:
 # 使用verdaccio建立npm仓库
 步骤如下：
 
-1. 安装
+## 安装
 nodejs版本14及以上
 ```bash
 npm install --location=global verdaccio
 ```
 
-2. 配置修改
+## 配置修改
 ```yaml
 # https://verdaccio.org/docs/configuration#uplinks
 # a list of other known repositories we can talk to
@@ -59,12 +59,12 @@ listen:
   - 0.0.0.0:4873 # listen on all addresses (INADDR_ANY)
 ```
 
-3. 配置nginx反向代理
+## 配置nginx反向代理
 ```nginx
 server {
     listen 80;
     # 域名
-    server_name npm.abc.com;
+    server_name npm.etsme.com;
     charset utf-8;
 
     location / {
@@ -79,7 +79,7 @@ server {
 }
 ```
 
-4. 创建系统服务
+## 创建系统服务
 ```bash
 # 从verdaccio拷贝服务配置文件
 sudo cp /usr/lib/node_modules/verdaccio/systemd/verdaccio.service /lib/systemd/system/
@@ -109,21 +109,31 @@ ExecStart=/home/etsme/.nvm/versions/node/v20.17.0/bin/verdaccio -c /home/etsme/v
 WantedBy=multi-user.target
 ```
    
-5. 添加来源
-修改~/.npmrc
-```rc
-// @scoped/xxx
-@xxx:registry=http://npm.abc.com/
+
+```bash
+
 ```
 
-6. 开始使用
+## 开始使用
 ```bash
+# 添加npm仓库地址
+npm config set @etsme:registry=http://npm.etsme.com/
+
 # 注册用户
-npm adduser --registry http://npm.abc.com
+npm adduser --registry http://npm.etsme.com
 
 # 发布包
-npm publish --registry http://npm.abc.com
+npm publish --registry http://npm.etsme.com
+
+# 发布测试版本
+npm publish --registry http://npm.etsme.com --tag beta
 
 # 取消发布
-npm unpublish --force --registry http://npm.abc.com
+npm unpublish --force --registry http://npm.etsme.com
+
+#取消发布测试版本，会删除所有beta版本
+npm unpublish --force --registry http://npm.etsme.com --tag beta
+
+# 查看包
+npm view @etsme/*
 ```
