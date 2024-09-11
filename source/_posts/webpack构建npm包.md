@@ -8,7 +8,7 @@ tags:
  - webpack
 ---
 
-#### 概述
+# 概述
 
 虽然 Webpack 多数情况下被用于构建 Web 应用，但与 Rollup、Snowpack 等工具类似，Webpack 同样具有完备的构建 NPM 库的能力。与一般场景相比，构建 NPM 库时需要注意：
 
@@ -19,7 +19,7 @@ tags:
 
 本文将从最基础的 NPM 库构建需求开始，逐步叠加上述特性，最终搭建出一套能满足多数应用场景、功能完备的 NPM 库构建环境。
 
-### 开发一个 NPM 库
+# 开发一个 NPM 库
 
 +   为方便讲解，假定我们正在开发一个全新的 NPM 库，暂且叫它 `test-lib` 吧，首先需要创建并初始化项目：
 
@@ -57,7 +57,7 @@ export const add = (a, b) => a + b
 │  │  ├─ index.js
 ```
 
-### 使用 Webpack 构建 NPM 库
+# 使用 Webpack 构建 NPM 库
 
 接下来，我们需要将上例 `test-lib` 构建为适合分发的产物形态。虽然 NPM 库与普通 Web 应用在形态上有些区别，但大体的编译需求趋同，因此可以复用前面章节介绍过的大多数知识点。例如 `test-lib` 所需要的基础编译配置如下：
 
@@ -156,7 +156,7 @@ const {add} = require('test-lib');
 </script>
 ```
 
-### 正确使用第三方包
+# 正确使用第三方包
 
 接下来，假设我们需要在 `test-lib` 中使用其它 NPM 包，例如 `lodash`：
 
@@ -231,7 +231,7 @@ module.exports = {
 };
 ```
 
-### 抽离 CSS 代码
+# 抽离 CSS 代码
 
 假设我们开发的 NPM 库中包含了 CSS 代码 —— 这在组件库中特别常见，我们通常需要使用 `mini-css-extract-plugin` 插件将样式抽离成单独文件，由用户自行引入。
 
@@ -256,7 +256,7 @@ module.exports = {
 
 +   提示：关于 CSS 构建的更多规则，可参考《[如何借助预处理器、PostCSS 等构建现代 CSS 工程环境？](https://juejin.cn/book/7115598540721618944/section/7116186197730263054)》
 
-### 生成 Sourcemap
+# 生成 Sourcemap
 
 Sourcemap 是一种代码映射协议，它能够将经过压缩、混淆、合并的代码还原回未打包状态，帮助开发者在生产环境中精确定位问题发生的行列位置，所以一个成熟的 NPM 库除了提供兼容性足够好的编译包外，通常还需要提供 Sourcemap 文件。
 
@@ -288,7 +288,7 @@ module.exports = {
 
 此后，业务方只需使用 `source-map-loader` 就可以将这段 Sourcemap 信息加载到自己的业务系统中，实现框架级别的源码调试能力
 
-### 其它 NPM 配置
+# 其它 NPM 配置
 
 至此，开发 NPM 库所需的 Webpack 配置就算是介绍完毕了，接下来我们还可以用一些小技巧优化 `test-lib` 的项目配置，提升开发效率，包括：
 
@@ -324,7 +324,7 @@ module.exports = {
     ```
     
 
-### 总结
+# 总结
 
 站在 Webpack 角度，构建 Web 应用于构建 NPM 库的差异并不大，开发时注意：
 
