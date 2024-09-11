@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha256-/4UQcSmErDzPCMAiuOiWPVVsNN2s3ZY/NsmXNcj0IFc=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"blog.hongcc.top","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.15.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="概述虽然 Webpack 多数情况下被用于构建 Web 应用，但与 Rollup、Snowpack 等工具类似，Webpack 同样具有完备的构建 NPM 库的能力。与一般场景相比，构建 NPM 库时需要注意：  正确导出模块内容； 不要将第三方包打包进产物中，以免与业务方环境发生冲突； 将 CSS 抽离为独立文件，以方便用户自行决定实际用法； 始终生成 Sourcemap 文件，方便用户调试。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="webpack构建npm包">
+<meta property="og:url" content="https://blog.hongcc.top/2024/09/10/webpack%E6%9E%84%E5%BB%BAnpm%E5%8C%85/">
+<meta property="og:site_name" content="洪城城的博客">
+<meta property="og:description" content="概述虽然 Webpack 多数情况下被用于构建 Web 应用，但与 Rollup、Snowpack 等工具类似，Webpack 同样具有完备的构建 NPM 库的能力。与一般场景相比，构建 NPM 库时需要注意：  正确导出模块内容； 不要将第三方包打包进产物中，以免与业务方环境发生冲突； 将 CSS 抽离为独立文件，以方便用户自行决定实际用法； 始终生成 Sourcemap 文件，方便用户调试。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.hongcc.top/2024/09/10/webpack%E6%9E%84%E5%BB%BAnpm%E5%8C%85/c82424f6e69b475392dff4f12d635801.jpeg">
+<meta property="og:image" content="https://blog.hongcc.top/2024/09/10/webpack%E6%9E%84%E5%BB%BAnpm%E5%8C%85/bae69e08b0e7482093b30c5fd26101ef.jpeg">
+<meta property="og:image" content="https://blog.hongcc.top/2024/09/10/webpack%E6%9E%84%E5%BB%BAnpm%E5%8C%85/5617d9bf8de94200b7bc215a1714497a.jpeg">
+<meta property="article:published_time" content="2024-09-10T10:21:21.000Z">
+<meta property="article:modified_time" content="2024-09-11T01:27:44.417Z">
+<meta property="article:author" content="洪城城">
+<meta property="article:tag" content="npm">
+<meta property="article:tag" content="webpack">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.hongcc.top/2024/09/10/webpack%E6%9E%84%E5%BB%BAnpm%E5%8C%85/c82424f6e69b475392dff4f12d635801.jpeg">
+
+
+<link rel="canonical" href="https://blog.hongcc.top/2024/09/10/webpack%E6%9E%84%E5%BB%BAnpm%E5%8C%85/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://blog.hongcc.top/2024/09/10/webpack%E6%9E%84%E5%BB%BAnpm%E5%8C%85/","path":"2024/09/10/webpack构建npm包/","title":"webpack构建npm包"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>webpack构建npm包 | 洪城城的博客</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">洪城城的博客</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%80%E5%8F%91%E4%B8%80%E4%B8%AA-NPM-%E5%BA%93"><span class="nav-number">2.</span> <span class="nav-text">开发一个 NPM 库</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-Webpack-%E6%9E%84%E5%BB%BA-NPM-%E5%BA%93"><span class="nav-number">3.</span> <span class="nav-text">使用 Webpack 构建 NPM 库</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%AD%A3%E7%A1%AE%E4%BD%BF%E7%94%A8%E7%AC%AC%E4%B8%89%E6%96%B9%E5%8C%85"><span class="nav-number">4.</span> <span class="nav-text">正确使用第三方包</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8A%BD%E7%A6%BB-CSS-%E4%BB%A3%E7%A0%81"><span class="nav-number">5.</span> <span class="nav-text">抽离 CSS 代码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%94%9F%E6%88%90-Sourcemap"><span class="nav-number">6.</span> <span class="nav-text">生成 Sourcemap</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B6%E5%AE%83-NPM-%E9%85%8D%E7%BD%AE"><span class="nav-number">7.</span> <span class="nav-text">其它 NPM 配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">8.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">洪城城</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.hongcc.top/2024/09/10/webpack%E6%9E%84%E5%BB%BAnpm%E5%8C%85/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="洪城城">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="洪城城的博客">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="webpack构建npm包 | 洪城城的博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          webpack构建npm包
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-09-10 18:21:21" itemprop="dateCreated datePublished" datetime="2024-09-10T18:21:21+08:00">2024-09-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-09-11 09:27:44" itemprop="dateModified" datetime="2024-09-11T09:27:44+08:00">2024-09-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/npm/" itemprop="url" rel="index"><span itemprop="name">npm</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>虽然 Webpack 多数情况下被用于构建 Web 应用，但与 Rollup、Snowpack 等工具类似，Webpack 同样具有完备的构建 NPM 库的能力。与一般场景相比，构建 NPM 库时需要注意：</p>
+<ul>
+<li>正确导出模块内容；</li>
+<li>不要将第三方包打包进产物中，以免与业务方环境发生冲突；</li>
+<li>将 CSS 抽离为独立文件，以方便用户自行决定实际用法；</li>
+<li>始终生成 Sourcemap 文件，方便用户调试。</li>
+</ul>
+<p>本文将从最基础的 NPM 库构建需求开始，逐步叠加上述特性，最终搭建出一套能满足多数应用场景、功能完备的 NPM 库构建环境。</p>
+<h1 id="开发一个-NPM-库"><a href="#开发一个-NPM-库" class="headerlink" title="开发一个 NPM 库"></a>开发一个 NPM 库</h1><ul>
+<li>为方便讲解，假定我们正在开发一个全新的 NPM 库，暂且叫它 <code>test-lib</code> 吧，首先需要创建并初始化项目：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> test-lib &amp;&amp; <span class="built_in">cd</span> test-lib</span><br><span class="line">npm init -y</span><br></pre></td></tr></table></figure>
+
+<p>虽然有很多构建工具能够满足 NPM 库的开发需求，但现在暂且选择 Webpack，所以需要先装好基础依赖：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn add -D webpack webpack-cli</span><br></pre></td></tr></table></figure>
+
+<p>接下来，可以开始写一些代码了，首先创建代码文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> src</span><br><span class="line"><span class="built_in">touch</span> src/index.js</span><br></pre></td></tr></table></figure>
+
+<p>之后，在 <code>test-lib/src/index.js</code> 文件中随便实现一些功能，比如：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// test-lib/src/index.js</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title function_">add</span> = (<span class="params">a, b</span>) =&gt; a + b</span><br></pre></td></tr></table></figure>
+
+<p>至此，项目搭建完毕，目录如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">├─ test-lib</span><br><span class="line">│  ├─ package.json</span><br><span class="line">│  ├─ src</span><br><span class="line">│  │  ├─ index.js</span><br></pre></td></tr></table></figure>
+
+<h1 id="使用-Webpack-构建-NPM-库"><a href="#使用-Webpack-构建-NPM-库" class="headerlink" title="使用 Webpack 构建 NPM 库"></a>使用 Webpack 构建 NPM 库</h1><p>接下来，我们需要将上例 <code>test-lib</code> 构建为适合分发的产物形态。虽然 NPM 库与普通 Web 应用在形态上有些区别，但大体的编译需求趋同，因此可以复用前面章节介绍过的大多数知识点。例如 <code>test-lib</code> 所需要的基础编译配置如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// webpack.config.js</span></span><br><span class="line"><span class="keyword">const</span> path = <span class="built_in">require</span>(<span class="string">&quot;path&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = &#123;</span><br><span class="line">  <span class="attr">mode</span>: <span class="string">&quot;development&quot;</span>,</span><br><span class="line">  <span class="attr">entry</span>: <span class="string">&quot;./src/index.js&quot;</span>,</span><br><span class="line">  <span class="attr">output</span>: &#123;</span><br><span class="line">    <span class="attr">filename</span>: <span class="string">&quot;[name].js&quot;</span>,</span><br><span class="line">    <span class="attr">path</span>: path.<span class="title function_">join</span>(__dirname, <span class="string">&quot;./dist&quot;</span>),</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>提示：我们还可以在上例基础上叠加任意 Loader、Plugin，例如： <code>babel-loader</code>、<code>eslint-loader</code>、<code>ts-loader</code> 等。</li>
+</ul>
+<p>上述配置会将代码编译成一个 IIFE 函数，但这并不适用于 NPM 库，我们需要修改 <code>output.library</code> 配置，以适当方式导出模块内容：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = &#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="attr">output</span>: &#123;</span><br><span class="line">    <span class="attr">filename</span>: <span class="string">&quot;[name].js&quot;</span>,</span><br><span class="line">    <span class="attr">path</span>: path.<span class="title function_">join</span>(__dirname, <span class="string">&quot;./dist&quot;</span>),</span><br><span class="line">+   <span class="attr">library</span>: &#123;</span><br><span class="line">+     <span class="attr">name</span>: <span class="string">&quot;_&quot;</span>,</span><br><span class="line">+     <span class="attr">type</span>: <span class="string">&quot;umd&quot;</span>,</span><br><span class="line">+   &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>这里用到了两个新配置项：</p>
+<ul>
+<li><p><a target="_blank" rel="noopener" href="https://webpack.js.org/configuration/output/#outputlibraryname">output.library.name</a>：用于定义模块名称，在浏览器环境下使用 <code>script</code> 加载该库时，可直接使用这个名字调用模块，例如：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">&quot;en&quot;</span>&gt;</span></span><br><span class="line">...</span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://examples.com/dist/main.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">        <span class="comment">// Webpack 会将模块直接挂载到全局对象上</span></span></span><br><span class="line"><span class="language-javascript">        <span class="variable language_">window</span>.<span class="property">_</span>.<span class="title function_">add</span>(<span class="number">1</span>, <span class="number">2</span>)</span></span><br><span class="line"><span class="language-javascript">    </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://webpack.js.org/configuration/output/#outputlibrarytype">output.library.type</a>：用于编译产物的模块化方案，可选值有：<code>commonjs</code>、<code>umd</code>、<code>module</code>、<code>jsonp</code> 等，通常选用兼容性更强的 <code>umd</code> 方案即可。</p>
+</li>
+<li><p>提示：JavaScript 最开始并没有模块化方案，这就导致早期 Web 开发需要将许多代码写进同一文件，极度影响开发效率。后来，随着 Web 应用复杂度逐步增高，社区陆陆续续推出了许多适用于不同场景的模块化规范，包括：CommonJS、UMD、CMD、AMD，以及 ES6 推出的 ES Module 方案，不同方案各有侧重点与适用场景，NPM 库作者需要根据预期的使用场景选择适当方案。</p>
+</li>
+</ul>
+<p>修改前后对应的产物内容如下：</p>
+<img data-src="/2024/09/10/webpack%E6%9E%84%E5%BB%BAnpm%E5%8C%85/c82424f6e69b475392dff4f12d635801.jpeg" class="" title="请添加图片描述">
+
+<p>可以看到，修改前(对应上图左半部分)代码会被包装成一个 IIFE ；而使用 <code>output.library</code> 后，代码被包装成 UMD(Universal Module Definition) 模式：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">(<span class="keyword">function</span> <span class="title function_">webpackUniversalModuleDefinition</span>(<span class="params">root, factory</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span>(<span class="keyword">typeof</span> <span class="built_in">exports</span> === <span class="string">&#x27;object&#x27;</span> &amp;&amp; <span class="keyword">typeof</span> <span class="variable language_">module</span> === <span class="string">&#x27;object&#x27;</span>)</span><br><span class="line">        <span class="variable language_">module</span>.<span class="property">exports</span> = <span class="title function_">factory</span>();</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(<span class="keyword">typeof</span> define === <span class="string">&#x27;function&#x27;</span> &amp;&amp; define.<span class="property">amd</span>)</span><br><span class="line">        <span class="title function_">define</span>([], factory);</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(<span class="keyword">typeof</span> <span class="built_in">exports</span> === <span class="string">&#x27;object&#x27;</span>)</span><br><span class="line">        <span class="built_in">exports</span>[<span class="string">&quot;_&quot;</span>] = <span class="title function_">factory</span>();</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        root[<span class="string">&quot;_&quot;</span>] = <span class="title function_">factory</span>();</span><br><span class="line">&#125;)(self, <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line"> <span class="comment">// ...</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>这种形态会在 NPM 库启动时判断运行环境，自动选择当前适用的模块化方案，此后我们就能在各种场景下使用 <code>test-lib</code> 库，例如：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ES Module</span></span><br><span class="line"><span class="keyword">import</span> &#123;add&#125; <span class="keyword">from</span> <span class="string">&#x27;test-lib&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// CommonJS</span></span><br><span class="line"><span class="keyword">const</span> &#123;add&#125; = <span class="built_in">require</span>(<span class="string">&#x27;test-lib&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// HTML</span></span><br><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://examples.com/dist/main.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">    <span class="comment">// Webpack 会将模块直接挂载到全局对象上</span></span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">    <span class="variable language_">window</span>.<span class="property">_</span>.<span class="title function_">add</span>(<span class="number">1</span>, <span class="number">2</span>)</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+<h1 id="正确使用第三方包"><a href="#正确使用第三方包" class="headerlink" title="正确使用第三方包"></a>正确使用第三方包</h1><p>接下来，假设我们需要在 <code>test-lib</code> 中使用其它 NPM 包，例如 <code>lodash</code>：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/index.js</span></span><br><span class="line"><span class="keyword">import</span> _ <span class="keyword">from</span> <span class="string">&quot;lodash&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title function_">add</span> = (<span class="params">a, b</span>) =&gt; a + b;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> max = _.<span class="property">max</span>;</span><br></pre></td></tr></table></figure>
+
+<p>此时执行编译命令 <code>npx webpack</code>，我们会发现产物文件的体积非常大：</p>
+<img data-src="/2024/09/10/webpack%E6%9E%84%E5%BB%BAnpm%E5%8C%85/bae69e08b0e7482093b30c5fd26101ef.jpeg" class="" title="请添加图片描述">
+
+<p>这是因为 Webpack 默认会将所有第三方依赖都打包进产物中，这种逻辑能满足 Web 应用资源合并需求，但在开发 NPM 库时则很可能导致代码冗余。以 <code>test-lib</code> 为例，若使用者在业务项目中已经安装并使用了 <code>lodash</code>，那么最终产物必然会包含两份 <code>lodash</code> 代码！</p>
+<p>为解决这一问题，我们需要使用 <a target="_blank" rel="noopener" href="https://webpack.js.org/configuration/externals/">externals</a> 配置项，将第三方依赖排除在打包系统之外：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// webpack.config.js</span></span><br><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = &#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">+  <span class="attr">externals</span>: &#123;</span><br><span class="line">+   <span class="attr">lodash</span>: &#123;</span><br><span class="line">+     <span class="attr">commonjs</span>: <span class="string">&quot;lodash&quot;</span>,</span><br><span class="line">+     <span class="attr">commonjs2</span>: <span class="string">&quot;lodash&quot;</span>,</span><br><span class="line">+     <span class="attr">amd</span>: <span class="string">&quot;lodash&quot;</span>,</span><br><span class="line">+     <span class="attr">root</span>: <span class="string">&quot;_&quot;</span>,</span><br><span class="line">+   &#125;,</span><br><span class="line">+ &#125;,</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>提示： Webpack 编译过程会跳过 <a target="_blank" rel="noopener" href="https://webpack.js.org/configuration/externals/">externals</a> 所声明的库，并假定消费场景已经安装了相关依赖，常用于 NPM 库开发场景；在 Web 应用场景下则常被用于优化性能。</p>
+</li>
+<li><p>例如，我们可以将 React 声明为外部依赖，并在页面中通过 <code>&lt;script&gt;</code> 标签方式引入 React 库，之后 Webpack 就可以跳过 React 代码，提升编译性能。</p>
+</li>
+</ul>
+<p>改造后，再次执行 <code>npx webpack</code>，编译结果如下：  </p>
+<img data-src="/2024/09/10/webpack%E6%9E%84%E5%BB%BAnpm%E5%8C%85/5617d9bf8de94200b7bc215a1714497a.jpeg" class="" title="请添加图片描述">
+
+<p>改造后，主要发生了两个变化：</p>
+<ol>
+<li>产物仅包含 <code>test-lib</code> 库代码，体积相比修改前大幅降低；</li>
+<li>UMD 模板通过 <code>require</code>、<code>define</code> 函数中引入 <code>lodash</code> 依赖并传递到 <code>factory</code>。</li>
+</ol>
+<p>至此，Webpack 不再打包 <code>lodash</code> 代码，我们可以顺手将 <code>lodash</code> 声明为 <code>peerDependencies</code>：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;6-1_test-lib&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">+ <span class="attr">&quot;peerDependencies&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">+   <span class="attr">&quot;lodash&quot;</span><span class="punctuation">:</span> <span class="string">&quot;^4.17.21&quot;</span></span><br><span class="line">+ <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>实践中，多数第三方框架都可以沿用上例方式处理，包括 React、Vue、Angular、Axios、Lodash 等，方便起见，可以直接使用 <a target="_blank" rel="noopener" href="https://www.npmjs.com/package/webpack-node-externals">webpack-node-externals</a> 排除所有 <code>node_modules</code> 模块，使用方法：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// webpack.config.js</span></span><br><span class="line"><span class="keyword">const</span> nodeExternals = <span class="built_in">require</span>(<span class="string">&#x27;webpack-node-externals&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = &#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">+  <span class="attr">externals</span>: [<span class="title function_">nodeExternals</span>()]</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h1 id="抽离-CSS-代码"><a href="#抽离-CSS-代码" class="headerlink" title="抽离 CSS 代码"></a>抽离 CSS 代码</h1><p>假设我们开发的 NPM 库中包含了 CSS 代码 —— 这在组件库中特别常见，我们通常需要使用 <code>mini-css-extract-plugin</code> 插件将样式抽离成单独文件，由用户自行引入。</p>
+<p>这是因为 Webpack 处理 CSS 的方式有很多，例如使用 <code>style-loader</code> 将样式注入页面的 <code>&lt;head&gt;</code> 标签；使用 <code>mini-css-extract-plugin</code> 抽离样式文件。作为 NPM 库开发者，如果我们粗暴地将 CSS 代码打包进产物中，有可能与用户设定的方式冲突。</p>
+<p>为此，需要在前文基础上添加如下配置：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = &#123;  </span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">+ <span class="attr">module</span>: &#123;</span><br><span class="line">+   <span class="attr">rules</span>: [</span><br><span class="line">+     &#123;</span><br><span class="line">+       <span class="attr">test</span>: <span class="regexp">/\.css$/</span>,</span><br><span class="line">+       <span class="attr">use</span>: [<span class="title class_">MiniCssExtractPlugin</span>.<span class="property">loader</span>, <span class="string">&quot;css-loader&quot;</span>],</span><br><span class="line">+     &#125;,</span><br><span class="line">+   ],</span><br><span class="line">+ &#125;,</span><br><span class="line">+ <span class="attr">plugins</span>: [<span class="keyword">new</span> <span class="title class_">MiniCssExtractPlugin</span>()],</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>提示：关于 CSS 构建的更多规则，可参考《<a target="_blank" rel="noopener" href="https://juejin.cn/book/7115598540721618944/section/7116186197730263054">如何借助预处理器、PostCSS 等构建现代 CSS 工程环境？</a>》</li>
+</ul>
+<h1 id="生成-Sourcemap"><a href="#生成-Sourcemap" class="headerlink" title="生成 Sourcemap"></a>生成 Sourcemap</h1><p>Sourcemap 是一种代码映射协议，它能够将经过压缩、混淆、合并的代码还原回未打包状态，帮助开发者在生产环境中精确定位问题发生的行列位置，所以一个成熟的 NPM 库除了提供兼容性足够好的编译包外，通常还需要提供 Sourcemap 文件。</p>
+<p>接入方法很简单，只需要添加适当的 <code>devtool</code> 配置：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// webpack.config.js</span></span><br><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = &#123;  </span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">+ <span class="attr">devtool</span>: <span class="string">&#x27;source-map&#x27;</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>再次执行 <code>npx webpack</code> 就可以看到 <code>.map</code> 后缀的映射文件：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">├─ test-lib</span><br><span class="line">│  ├─ package.json</span><br><span class="line">│  ├─ webpack.config.js</span><br><span class="line">│  ├─ src</span><br><span class="line">│  │  ├─ index.css</span><br><span class="line">│  │  ├─ index.js</span><br><span class="line">│  ├─ dist</span><br><span class="line">│  │  ├─ main.js</span><br><span class="line">│  │  ├─ main.js.map</span><br><span class="line">│  │  ├─ main.css</span><br><span class="line">│  │  ├─ main.css.map</span><br></pre></td></tr></table></figure>
+
+<p>此后，业务方只需使用 <code>source-map-loader</code> 就可以将这段 Sourcemap 信息加载到自己的业务系统中，实现框架级别的源码调试能力</p>
+<h1 id="其它-NPM-配置"><a href="#其它-NPM-配置" class="headerlink" title="其它 NPM 配置"></a>其它 NPM 配置</h1><p>至此，开发 NPM 库所需的 Webpack 配置就算是介绍完毕了，接下来我们还可以用一些小技巧优化 <code>test-lib</code> 的项目配置，提升开发效率，包括：</p>
+<ul>
+<li><p>使用 <code>.npmignore</code> 文件忽略不需要发布到 NPM 的文件；</p>
+</li>
+<li><p>在 <code>package.json</code> 文件中，使用 <code>prepublishOnly</code> 指令，在发布前自动执行编译命令，例如：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// package.json</span></span><br><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;test-lib&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="attr">&quot;scripts&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;prepublishOnly&quot;</span><span class="punctuation">:</span> <span class="string">&quot;webpack --mode=production&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在 <code>package.json</code> 文件中，使用 <code>main</code> 指定项目入口，同时使用 <code>module</code> 指定 ES Module 模式下的入口，以允许用户直接使用源码版本，例如：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;6-1_test-lib&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="attr">&quot;main&quot;</span><span class="punctuation">:</span> <span class="string">&quot;dist/main.js&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;module&quot;</span><span class="punctuation">:</span> <span class="string">&quot;src/index.js&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;scripts&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;prepublishOnly&quot;</span><span class="punctuation">:</span> <span class="string">&quot;webpack --mode=production&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>站在 Webpack 角度，构建 Web 应用于构建 NPM 库的差异并不大，开发时注意：</p>
+<ul>
+<li>使用 <code>output.library</code> 配置项，正确导出模块内容；</li>
+<li>使用 <code>externals</code> 配置项，忽略第三方库；</li>
+<li>使用 <code>mini-css-extract-plugin</code> 单独打包 CSS 样式代码；</li>
+<li>使用 <code>devtool</code> 配置项生成 Sourcemap 文件，这里推荐使用 <code>devtool = &#39;source-map&#39;</code>。</li>
+</ul>
+<p>遵循上述规则，基本上就能满足开发一个 NPM 库所需的大部分需求</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/npm/" rel="tag"># npm</a>
+              <a href="/tags/webpack/" rel="tag"># webpack</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/09/10/%E4%BD%BF%E7%94%A8verdaccio%E5%BB%BA%E7%AB%8Bnpm%E4%BB%93%E5%BA%93/" rel="prev" title="使用verdaccio建立npm仓库">
+                  <i class="fa fa-chevron-left"></i> 使用verdaccio建立npm仓库
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">洪城城</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+</body>
+</html>
