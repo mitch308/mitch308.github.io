@@ -129,10 +129,16 @@ npm publish --registry
 # 发布测试版本
 npm publish --registry --tag beta
 
-# 取消发布
+# 取消发布当前版本
 npm unpublish --force
 
-#取消发布测试版本，会删除所有beta版本
+# 取消发布全部版本
+npm unpublish package --force
+
+# 取消发布指定版本
+npm unpublish package@version --force
+
+#取消发布当前测试版本，会删除所有beta版本
 npm unpublish --force --tag beta
 
 # 安装包
