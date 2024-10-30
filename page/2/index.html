@@ -122,18 +122,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">12</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">6</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-count">12</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -150,6 +150,118 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://blog.hongcc.top/2021/02/07/gitLab%E5%BB%BA%E7%AB%8Bnpm%E5%85%AC%E5%85%B1%E7%BB%84%E4%BB%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="洪城城">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="洪城城的博客">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | 洪城城的博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/02/07/gitLab%E5%BB%BA%E7%AB%8Bnpm%E5%85%AC%E5%85%B1%E7%BB%84%E4%BB%B6/" class="post-title-link" itemprop="url">gitLab建立npm公共组件</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-02-07 14:53:07" itemprop="dateCreated datePublished" datetime="2021-02-07T14:53:07+08:00">2021-02-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-09-10 11:02:51" itemprop="dateModified" datetime="2024-09-10T11:02:51+08:00">2024-09-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/npm/" itemprop="url" rel="index"><span itemprop="name">npm</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="使用gitLab建立npm公共组件"><a href="#使用gitLab建立npm公共组件" class="headerlink" title="使用gitLab建立npm公共组件"></a>使用gitLab建立npm公共组件</h1><p>步骤如下：</p>
+<ol>
+<li><p>在gitLab上建立一个项目，用于存放组件代码</p>
+<img src="/2021/02/07/gitLab%E5%BB%BA%E7%AB%8Bnpm%E5%85%AC%E5%85%B1%E7%BB%84%E4%BB%B6/1061609983902_.pic.jpg" class="" title="建立gitLab项目">
+</li>
+<li><p>项目代码<br><code>npm init</code> 初始化一个 <code>package.json</code></p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;@wjs-npm/fixedHeaderTable&quot;</span><span class="punctuation">,</span> <span class="comment">// 组件名称（建议使用 @库名/组件名 的写法）</span></span><br><span class="line">  <span class="attr">&quot;version&quot;</span><span class="punctuation">:</span> <span class="string">&quot;1.0.0&quot;</span><span class="punctuation">,</span> <span class="comment">// 组件版本</span></span><br><span class="line">  <span class="attr">&quot;private&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span> <span class="comment">// 防止代码被公开发布</span></span><br><span class="line">  <span class="attr">&quot;description&quot;</span><span class="punctuation">:</span> <span class="string">&quot;HelloWorld&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;main&quot;</span><span class="punctuation">:</span> <span class="string">&quot;index.js&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;repository&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;git&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;url&quot;</span><span class="punctuation">:</span> <span class="string">&quot;https://git.wjs-dev.com/wjs-npm/fixedHeaderTable.git&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;author&quot;</span><span class="punctuation">:</span> <span class="string">&quot;bayunjiang&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;license&quot;</span><span class="punctuation">:</span> <span class="string">&quot;ISC&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>新建一个 <code>index.js</code> 文件，在其中写一个示例函数，内容参考如下。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title function_">HelloWorld</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;Hello World&#x27;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> &#123; <span class="title class_">HelloWorld</span> &#125;</span><br></pre></td></tr></table></figure>
+<p>也可以写成vue插件，以自己写的一个插件为例。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="title class_">ElTable</span> <span class="keyword">from</span> <span class="string">&#x27;./ElTable&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">  install (<span class="title class_">Vue</span>, options) &#123;</span><br><span class="line">    <span class="keyword">if</span> (options) &#123;</span><br><span class="line">      <span class="title class_">ElTable</span>.<span class="property">data</span> = <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="title class_">Object</span>.<span class="title function_">assign</span>(&#123;</span><br><span class="line">          <span class="attr">topOffset</span>: <span class="number">60</span>,</span><br><span class="line">          <span class="attr">rightOffset</span>: <span class="number">12</span>,</span><br><span class="line">          <span class="attr">tableWidth</span>: <span class="number">0</span>,</span><br><span class="line">          <span class="attr">headerFixed</span>: <span class="literal">false</span></span><br><span class="line">        &#125;, options)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="title class_">Vue</span>.<span class="title function_">component</span>(<span class="title class_">ElTable</span>.<span class="property">name</span>, <span class="title class_">ElTable</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装依赖<br>使用npm安装依赖</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -S git+https://git.wjs-dev.com/wjs-npm/fixedHeaderTable.git</span><br></pre></td></tr></table></figure>
+<p>默认安装的是 <code>master</code> 分支的代码<br>安装完成之后我们可以在 <code>package.json</code> 文件中看到如下内容。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">&quot;dependencies&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">   <span class="attr">&quot;@wjs-npm/fixedHeaderTable&quot;</span><span class="punctuation">:</span> <span class="string">&quot;git+https://git.wjs-dev.com/wjs-npm/fixedHeaderTable.git&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>插件使用<br>和其它npm包的使用一样</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="title class_">Vue</span> <span class="keyword">from</span> <span class="string">&#x27;Vue&#x27;</span></span><br><span class="line"><span class="keyword">import</span> fixedHeaderTable <span class="keyword">from</span> <span class="string">&#x27;@wjs-npm/fixedHeaderTable&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="title class_">Vue</span>.<span class="title function_">use</span>(fixedHeaderTable)</span><br></pre></td></tr></table></figure></li>
+<li><p>版本管理<br>通过建立 <code>tag</code> 进行版本管理</p>
+<img src="/2021/02/07/gitLab%E5%BB%BA%E7%AB%8Bnpm%E5%85%AC%E5%85%B1%E7%BB%84%E4%BB%B6/20210207161026.jpg" class="" title="创建tag">
+<img src="/2021/02/07/gitLab%E5%BB%BA%E7%AB%8Bnpm%E5%85%AC%E5%85%B1%E7%BB%84%E4%BB%B6/20210207160945.jpg" class="" title="创建tag">
+<p>在安装依赖时，在原链接后面加上 <code>#tag</code> 设置版本</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -S git+https://git.wjs-dev.com/wjs-npm/fixedHeaderTable.git#1.0.0</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>存在的问题<br>由于npm有缓存机制，所以下载一次后如果你更新了依赖代码，再次运行 <code>npm install</code> 是无法拉取到最新代码的。<br>如果要更新依赖，需要删除重新安装。</p>
+</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 

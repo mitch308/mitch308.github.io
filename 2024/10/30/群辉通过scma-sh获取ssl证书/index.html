@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha256-/4UQcSmErDzPCMAiuOiWPVVsNN2s3ZY/NsmXNcj0IFc=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"blog.hongcc.top","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.15.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="使用 acme.sh 为 Synology NAS 配置 HTTPS 证书准备 公网IP，动态的也可以 域名，有权限添加dns解析  安装 acme.sh1234567sudo sucd ~wget https:&#x2F;&#x2F;github.com&#x2F;acmesh-official&#x2F;acme.sh&#x2F;archive&#x2F;master.tar.gztar xvf master.tar.gzcd acme.sh-mast">
+<meta property="og:type" content="article">
+<meta property="og:title" content="群辉通过scma.sh获取ssl证书">
+<meta property="og:url" content="https://blog.hongcc.top/2024/10/30/%E7%BE%A4%E8%BE%89%E9%80%9A%E8%BF%87scma-sh%E8%8E%B7%E5%8F%96ssl%E8%AF%81%E4%B9%A6/">
+<meta property="og:site_name" content="洪城城的博客">
+<meta property="og:description" content="使用 acme.sh 为 Synology NAS 配置 HTTPS 证书准备 公网IP，动态的也可以 域名，有权限添加dns解析  安装 acme.sh1234567sudo sucd ~wget https:&#x2F;&#x2F;github.com&#x2F;acmesh-official&#x2F;acme.sh&#x2F;archive&#x2F;master.tar.gztar xvf master.tar.gzcd acme.sh-mast">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-10-30T10:53:47.000Z">
+<meta property="article:modified_time" content="2024-10-30T11:14:30.974Z">
+<meta property="article:author" content="洪城城">
+<meta property="article:tag" content="群辉">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://blog.hongcc.top/2024/10/30/%E7%BE%A4%E8%BE%89%E9%80%9A%E8%BF%87scma-sh%E8%8E%B7%E5%8F%96ssl%E8%AF%81%E4%B9%A6/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://blog.hongcc.top/2024/10/30/%E7%BE%A4%E8%BE%89%E9%80%9A%E8%BF%87scma-sh%E8%8E%B7%E5%8F%96ssl%E8%AF%81%E4%B9%A6/","path":"2024/10/30/群辉通过scma-sh获取ssl证书/","title":"群辉通过scma.sh获取ssl证书"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>群辉通过scma.sh获取ssl证书 | 洪城城的博客</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">洪城城的博客</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-acme-sh-%E4%B8%BA-Synology-NAS-%E9%85%8D%E7%BD%AE-HTTPS-%E8%AF%81%E4%B9%A6"><span class="nav-number">1.</span> <span class="nav-text">使用 acme.sh 为 Synology NAS 配置 HTTPS 证书</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%86%E5%A4%87"><span class="nav-number">1.0.1.</span> <span class="nav-text">准备</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-acme-sh"><span class="nav-number">1.0.2.</span> <span class="nav-text">安装 acme.sh</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE-DNS"><span class="nav-number">1.0.3.</span> <span class="nav-text">配置 DNS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E8%AF%81%E4%B9%A6"><span class="nav-number">1.0.4.</span> <span class="nav-text">创建证书</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%83%A8%E7%BD%B2%E9%BB%98%E8%AE%A4%E8%AF%81%E4%B9%A6"><span class="nav-number">1.0.5.</span> <span class="nav-text">部署默认证书</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E4%B8%B4%E6%97%B6%E6%88%96%E7%8E%B0%E6%9C%89%E7%AE%A1%E7%90%86%E5%91%98%E7%94%A8%E6%88%B7%E9%83%A8%E7%BD%B2"><span class="nav-number">1.0.5.1.</span> <span class="nav-text">使用临时或现有管理员用户部署</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E7%8E%B0%E6%9C%89%E7%AE%A1%E7%90%86%E5%91%98%E7%94%A8%E6%88%B7%E9%83%A8%E7%BD%B2"><span class="nav-number">1.0.5.2.</span> <span class="nav-text">使用现有管理员用户部署</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-HTTPS-%E9%83%A8%E7%BD%B2"><span class="nav-number">1.0.6.</span> <span class="nav-text">使用 HTTPS 部署</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%83%A8%E7%BD%B2%E9%A2%9D%E5%A4%96%E8%AF%81%E4%B9%A6"><span class="nav-number">1.0.7.</span> <span class="nav-text">部署额外证书</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E8%AF%81%E4%B9%A6%E7%BB%AD%E8%AE%A2"><span class="nav-number">1.0.8.</span> <span class="nav-text">配置证书续订</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%AE%E5%A4%8D-Synology-DSM-%E5%8D%87%E7%BA%A7%E5%90%8E%E7%9A%84%E7%8E%AF%E5%A2%83%E9%97%AE%E9%A2%98"><span class="nav-number">1.0.9.</span> <span class="nav-text">修复 Synology DSM 升级后的环境问题</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">洪城城</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.hongcc.top/2024/10/30/%E7%BE%A4%E8%BE%89%E9%80%9A%E8%BF%87scma-sh%E8%8E%B7%E5%8F%96ssl%E8%AF%81%E4%B9%A6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="洪城城">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="洪城城的博客">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="群辉通过scma.sh获取ssl证书 | 洪城城的博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          群辉通过scma.sh获取ssl证书
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2024-10-30 18:53:47 / 修改时间：19:14:30" itemprop="dateCreated datePublished" datetime="2024-10-30T18:53:47+08:00">2024-10-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BE%A4%E8%BE%89/" itemprop="url" rel="index"><span itemprop="name">群辉</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="使用-acme-sh-为-Synology-NAS-配置-HTTPS-证书"><a href="#使用-acme-sh-为-Synology-NAS-配置-HTTPS-证书" class="headerlink" title="使用 acme.sh 为 Synology NAS 配置 HTTPS 证书"></a>使用 acme.sh 为 Synology NAS 配置 HTTPS 证书</h1><h3 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h3><ol>
+<li>公网IP，动态的也可以</li>
+<li>域名，有权限添加dns解析</li>
+</ol>
+<h3 id="安装-acme-sh"><a href="#安装-acme-sh" class="headerlink" title="安装 acme.sh"></a>安装 acme.sh</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">sudo su</span><br><span class="line"><span class="built_in">cd</span> ~</span><br><span class="line">wget https://github.com/acmesh-official/acme.sh/archive/master.tar.gz</span><br><span class="line">tar xvf master.tar.gz</span><br><span class="line"><span class="built_in">cd</span> acme.sh-master/</span><br><span class="line">./acme.sh --install --nocron --home /usr/local/share/acme.sh --accountemail <span class="string">&quot;email@gmail.com&quot;</span></span><br><span class="line"><span class="built_in">source</span> ~/.profile</span><br></pre></td></tr></table></figure>
+
+<h3 id="配置-DNS"><a href="#配置-DNS" class="headerlink" title="配置 DNS"></a>配置 DNS</h3><p>对于 Aliyun，我们将设置两个环境变量，acme.sh（特别是 <a target="_blank" rel="noopener" href="https://github.com/acmesh-official/acme.sh/wiki/dnsapi">dnsapi</a> 子目录中的 dns_ali 脚本）将读取这些变量来设置 DNS 记录。您可以在<a target="_blank" rel="noopener" href="https://ram.console.aliyun.com/users">这里</a>获取您的 aliyum API 密钥。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> Ali_Key=<span class="string">&quot;&lt;key&gt;&quot;</span></span><br><span class="line"><span class="built_in">export</span> Ali_Secret=<span class="string">&quot;&lt;secret&gt;&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>别忘了添加【管理云解析（DNS）的权限】</p>
+<p>如果您使用其他 DNS 服务，请检查 dnsapi 目录和 DNS API 指南。许多 DNS 提供商的说明已包含在内。您还可以找到如何添加其他 DNS 服务的说明，但这需要一</p>
+<h3 id="创建证书"><a href="#创建证书" class="headerlink" title="创建证书"></a>创建证书</h3><p>现在是时候为您的域名创建证书了：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 这些命令假设您仍在同一个终端中，并已运行上面描述的必要命令。</span></span><br><span class="line"><span class="built_in">cd</span> /usr/local/share/acme.sh</span><br><span class="line"><span class="built_in">export</span> CERT_DOMAIN=<span class="string">&quot;example.com&quot;</span></span><br><span class="line"><span class="built_in">export</span> CERT_DNS=<span class="string">&quot;dns_ali&quot;</span></span><br><span class="line">./acme.sh --issue --server letsencrypt --home . -d <span class="string">&quot;<span class="variable">$CERT_DOMAIN</span>&quot;</span> -d <span class="string">&quot;*.<span class="variable">$CERT_DOMAIN</span>&quot;</span> --dns <span class="string">&quot;<span class="variable">$CERT_DNS</span>&quot;</span> --keylength 2048</span><br></pre></td></tr></table></figure>
+
+<h3 id="部署默认证书"><a href="#部署默认证书" class="headerlink" title="部署默认证书"></a>部署默认证书</h3><p>我们将使用 Synology DSM 的 deployhook 来部署我们的证书。这将覆盖默认证书（如果您尚未为其设置任何描述），您可以在本节稍后了解如何创建用于其他服务的新证书。</p>
+<p>以下代码块中的命令假设您仍在同一个终端中，并执行了必要的命令。</p>
+<h4 id="使用临时或现有管理员用户部署"><a href="#使用临时或现有管理员用户部署" class="headerlink" title="使用临时或现有管理员用户部署"></a>使用临时或现有管理员用户部署</h4><p>（推荐）使用自动创建的临时管理员用户部署</p>
+<p>如果您在 DSM 中安装了 acme.sh，建议您尝试自动临时用户身份验证方法进行部署（DSM 应该已经具备所需的内置工具，如果没有，我们会告诉您）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> SYNO_USE_TEMP_ADMIN=1</span><br><span class="line">./acme.sh --deploy --home . -d <span class="string">&quot;<span class="variable">$CERT_DOMAIN</span>&quot;</span> --deploy-hook synology_dsm</span><br></pre></td></tr></table></figure>
+
+<p>通过这种方式，您无需提供任何管理员凭据，部署脚本本身将利用 Synology 内置工具完成身份验证，因此它设计仅支持本地部署，不能用于 Docker 部署或远程部署。</p>
+<p>脚本将加载之前保存的配置以供后续部署，因此如果您想回到使用现有管理员用户进行部署，您需要首先执行 <code>export CLEAR_SYNO_USE_TEMP_ADMIN=1</code>。部署脚本退出后，临时管理员用户应该未被创建或已经被删除，但如果脚本意外退出（例如，通过按“Ctrl+C”中止），它可能仍然保留，在这种情况下，您可以安全地通过“控制面板”删除它。</p>
+<h4 id="使用现有管理员用户部署"><a href="#使用现有管理员用户部署" class="headerlink" title="使用现有管理员用户部署"></a>使用现有管理员用户部署</h4><p>如果您更喜欢使用现有的管理员用户进行部署，或者上述方法不可用（例如，安装在 Docker 中，想要远程部署等），您需要提供自己的凭据：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 单引号防止某些特殊字符的转义问题</span></span><br><span class="line"><span class="built_in">export</span> SYNO_USERNAME=<span class="string">&#x27;Admin_Username&#x27;</span></span><br><span class="line"><span class="built_in">export</span> SYNO_PASSWORD=<span class="string">&#x27;Admin_Password!123&#x27;</span></span><br><span class="line">./acme.sh --deploy --home . -d <span class="string">&quot;<span class="variable">$CERT_DOMAIN</span>&quot;</span> --deploy-hook synology_dsm</span><br></pre></td></tr></table></figure>
+
+<p>请注意，如果由 <code>SYNO_USERNAME</code> 指定的用户启用了双因素身份验证（2FA），脚本将要求您手动输入 TOTP 代码，就像在网页界面登录一样（如果您没有通过 <code>export SYNO_OTP_CODE=XXXXXX</code> 提供代码）。它还将要求您输入设备名称进行验证（也可以通过 <code>export SYNO_DEVICE_NAME=CertRenewal</code> 提供），然后获取必要的信息，以便在未来的操作中省略 TOTP，因此您无需再次手动输入。</p>
+<p>顺便提一下，如果您以前使用此脚本进行部署，所需的信息现在被称为参数“设备 ID”，如果您是专业用户并希望手动获取它，您仍然可以，方法简要说明：通过其网站登录到 DSM，确保在要求输入 OTP 时选择“记住此设备”，获取 <code>did</code> cookie 的值并设置环境变量 <code>SYNO_DEVICE_ID</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> SYNO_DEVICE_ID=<span class="string">&#x27;YOUR VALUE&#x27;</span></span><br><span class="line">./acme.sh --deploy --home . -d <span class="string">&quot;<span class="variable">$CERT_DOMAIN</span>&quot;</span> --deploy-hook synology_dsm</span><br></pre></td></tr></table></figure>
+
+<h3 id="使用-HTTPS-部署"><a href="#使用-HTTPS-部署" class="headerlink" title="使用 HTTPS 部署"></a>使用 HTTPS 部署</h3><p>当我们希望使用 HTTPS 部署新证书并连接到“localhost”时，需要在部署命令中添加 <code>--insecure</code> 选项以防止 curl 错误。请参阅 [<a target="_blank" rel="noopener" href="https://github.com/acmesh-official/acme.sh/wiki/Options-and-Params]%E3%80%82%E5%A6%82%E6%9E%9C%E6%82%A8%E5%90%AF%E7%94%A8%E4%BA%86">https://github.com/acmesh-official/acme.sh/wiki/Options-and-Params]。如果您启用了</a> HTTP&#x2F;2，您仍然可能会收到 curl 16 错误，这可能是由于 NAS 上缺少 http2 依赖项，但脚本仍会成功。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># export SYNO_HOSTNAME=&quot;localhost&quot; # 如果不使用 localhost，则指定</span></span><br><span class="line"><span class="built_in">export</span> SYNO_SCHEME=<span class="string">&quot;https&quot;</span></span><br><span class="line"><span class="built_in">export</span> SYNO_PORT=<span class="string">&quot;5001&quot;</span></span><br><span class="line">./acme.sh --deploy --insecure --home . -d <span class="string">&quot;<span class="variable">$CERT_DOMAIN</span>&quot;</span> --deploy-hook synology_dsm</span><br></pre></td></tr></table></figure>
+
+<p>此外，如果您使用临时管理员方法进行部署，为了避免混淆，<code>SYNO_HOSTNAME</code> 的值必须指向当前本地计算机（可以是 localhost 或 127.0.0.1），但是如果您的自定义 <code>SYNO_HOSTNAME</code> 确实指向当前本地计算机，则应在部署前执行 <code>export SYNO_LOCAL_HOSTNAME=1</code>。</p>
+<h3 id="部署额外证书"><a href="#部署额外证书" class="headerlink" title="部署额外证书"></a>部署额外证书</h3><p>通过指定不同的 <code>SYNO_CERTIFICATE</code>（并设置 <code>SYNO_CREATE=1</code> 用于创建），我们可以向 DSM 部署多个证书。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># SYNO_CERTIFICATE 是在 DSM 控制面板的“安全性 -&gt; 证书”下显示的描述</span></span><br><span class="line"><span class="built_in">export</span> SYNO_CERTIFICATE=<span class="string">&quot;不同的证书描述&quot;</span></span><br><span class="line"><span class="built_in">export</span> SYNO_CREATE=1 <span class="comment"># 表示如果证书不存在则创建</span></span><br><span class="line">./acme.sh --deploy --home . -d <span class="string">&quot;subdomain.<span class="variable">$CERT_DOMAIN</span>&quot;</span> --deploy-hook synology_dsm</span><br></pre></td></tr></table></figure>
+
+<h3 id="配置证书续订"><a href="#配置证书续订" class="headerlink" title="配置证书续订"></a>配置证书续订</h3><p>要在未来自动续订证书，您需要在任务调度器中配置一个任务。不建议将其设置为自定义 cronjob（如之前在本维基页面中描述的那样），因为 DSM 安全顾问会告诉您有关未知 cronjob 的严重警告。</p>
+<p>在 DSM 控制面板中，打开“任务调度器”，并为用户定义的脚本创建一个新计划任务。</p>
+<ul>
+<li><strong>常规设置</strong>：任务 - 更新默认证书。用户 - root</li>
+<li><strong>计划</strong>：设置每周续订。例如，每周六上午 11:00。</li>
+<li><strong>任务设置</strong>：用户定义的脚本：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 续订证书</span></span><br><span class="line">/usr/local/share/acme.sh/acme.sh --cron --home /usr/local/share/acme.sh</span><br></pre></td></tr></table></figure>
+
+<h3 id="修复-Synology-DSM-升级后的环境问题"><a href="#修复-Synology-DSM-升级后的环境问题" class="headerlink" title="修复 Synology DSM 升级后的环境问题"></a>修复 Synology DSM 升级后的环境问题</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./acme.sh --force --upgrade --nocron --home .</span><br></pre></td></tr></table></figure>
+
+<p>或者手动将以下行添加到 <code>/root/.profile</code> 中：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">. <span class="string">&quot;/usr/local/share/acme.sh/acme.sh.env&quot;</span></span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%BE%A4%E8%BE%89/" rel="tag"># 群辉</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/09/21/windows%E4%B8%8B%E5%90%8C%E6%97%B6%E8%BF%9E%E6%8E%A5%E5%A4%9A%E4%B8%AAopenvpn%E7%9A%84%E5%8A%9E%E6%B3%95/" rel="prev" title="windows下同时连接多个openvpn的办法">
+                  <i class="fa fa-chevron-left"></i> windows下同时连接多个openvpn的办法
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">洪城城</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+</body>
+</html>
